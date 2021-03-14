@@ -1,0 +1,93 @@
+run:
+  tests: true
+  timeout: 2m
+  issues-exit-code: 1
+  skip-dirs-use-default: true
+  modules-download-mode: readonly
+
+output:
+  print-linter-name: true
+  print-issued-lines: true
+
+linters:
+  fast: true
+  enable:
+    - deadcode        # Finds unused code
+    - errcheck        # Locates unchecked errors in function returns
+    - exhaustive      # Reports non-exhaustive switch statements
+    - funlen          # Limits the max lines and statements of functions
+    - gochecknoinits  # Forbids init function declarations in packages (side-effects)
+    - goconst         # Enforces constants are created for repeated strings
+    - gocritic        # Offers an opinionated set of best practices
+    - gocyclo         # Analyzes code complexity (cyclomatic)
+    - gosimple        # Offers code simplification suggestions
+    - gofmt           # Enforces source code is properly formatted
+    - gomnd           # Forbids magic numbers from being used without declaration
+    - gosec           # Inspects source code for security problems
+    - govet           # Reports suspicious construct (e.g. Printf with bad parameter count)
+    - ineffassign     # Detects unused existing variable assignments
+    - lll             # Limits maximum line lengths
+    - nakedret        # Prevents naked returns from being used in large functions
+    - nestif          # Limits the amount of nested ifs
+    - scopelint       # Checks for unpinned variables
+    - staticcheck     # Applies many different static analysis checks (similar to govet)
+    - structcheck     # Finds unused struct fields
+    - typecheck       # Parses and type-checks code
+    - unconvert       # Reports unnecessary type conversions
+    - unparam         # Reports unused function parameters
+    - varcheck        # Reports unused global variables and constants
+    - whitespace      # Enforces no excessive whitespace is used (e.g. two line breaks)
+
+issues:
+  exclude-use-default: true
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new: false
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - goconst
+        - gocritic
+        - gosec
+        - lll
+
+linters-settings:
+  errcheck:
+    check-blank: true
+    check-type-assertions: false
+  exhaustive:
+    default-signifies-exhaustive: true
+  funlen:
+    lines: 100
+    statements: 40
+  goconst:
+    min-len: 3
+    min-occurrences: 2
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+      - style
+    disabled-checks:
+      - emptyStringTest
+      - unnecessaryBlock
+      - whyNoLint
+  gocyclo:
+    min-complexity: 8
+  gofmt:
+    simplify: true
+  govet:
+    check-shadowing: true
+    enable-all: true
+    disable:
+      - fieldalignment
+  lll:
+    line-length: 120
+    tab-width: 4
+  nakedret:
+    max-func-lines: 30
+  nestif:
+    min-complexity: 4
+  whitespace:
+    multi-if: true
+    multi-func: false
