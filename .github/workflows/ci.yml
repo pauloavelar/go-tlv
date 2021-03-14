@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Installs and configures Go
+      - name: go setup
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16.1'
+    
+      # Checks-out your repo under $GITHUB_WORKSPACE
+      - name: checkout
+        uses: actions/checkout@v2
+
+      # Builds code
+      - name: build
+        run: go build ./...
+
+      # Tests code
+      - name: test
+        run: go test ./...
+
+      # Runs golangci-lint
+      - name: lint
+        uses: golangci/golangci-lint-action@v2.5.1
+        with:
+          version: latest
+          skip-go-installation: true
+
