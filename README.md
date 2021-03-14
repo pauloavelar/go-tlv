@@ -1,7 +1,8 @@
 # Go TLV
 
-[![license](https://img.shields.io/github/license/pauloavelar/go-tlv)](https://github.com/pauloavelar/go-tlv/blob/main/LICENSE)
 [![go version](https://img.shields.io/github/go-mod/go-version/pauloavelar/go-tlv)](https://github.com/pauloavelar/go-tlv/blob/main/go.mod)
+[![go docs](https://pkg.go.dev/badge/github.com/pauloavelar/go-tlv.svg)](https://pkg.go.dev/github.com/pauloavelar/go-tlv)
+[![license](https://img.shields.io/github/license/pauloavelar/go-tlv)](https://github.com/pauloavelar/go-tlv/blob/main/LICENSE)
 [![build](https://img.shields.io/github/workflow/status/pauloavelar/go-tlv/CI)](https://github.com/pauloavelar/go-tlv/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/pauloavelar/go-tlv/branch/main/graph/badge.svg?token=4V15TQTKRR)](https://codecov.io/gh/pauloavelar/go-tlv)
 [![open issues](https://img.shields.io/github/issues-raw/pauloavelar/go-tlv)](https://github.com/pauloavelar/go-tlv/issues)
@@ -43,7 +44,7 @@ data := []byte{0x00, 0x01, 0x02 /* ... */}
 
 nodes, err := tlv.ParseBytes(data)
 if err != nil {
-	panic(err) // invalid payload length vs bytes available
+    panic(err) // invalid payload length vs bytes available
 }
 
 nodes.HasTag(0x0123)        // returns a bool with the tag presence
@@ -82,7 +83,7 @@ n.GetPaddedUint8()  // parses the value as uint8 and pads it if too small
 | `string` |      **Unlimited** | Value is parsed as **UTF-8**                                      |
 | `Nodes`  |      **Unlimited** |                                                                   |
 
-> If the **value** is bigger than the **max length**, only the first _n_ bytes are used. 
+> If the **value** is bigger than the **max length**, only the first _n_ bytes are used.
 
 ## Important details
 
@@ -98,8 +99,8 @@ respectively.
 # Visual representation of a repeated tag in an object-like payload
 message:
   - object:
-    - repeated_tag: a  # this will be a node 
-    - repeated_tag: b  # this will be another node
+      - repeated_tag: a  # this will be a node 
+      - repeated_tag: b  # this will be another node
 ```
 
 ### The parser supports multiple root level messages
@@ -126,15 +127,10 @@ means none of it can be trusted.
 
 > ⚠️&nbsp; If by the end of the stream there is a mismatch between the **provided length** and the
 > **remaining bytes**, the whole payload is invalidated, and the parser will return an error,
-> **regardless of how many successful messages it has read**. 
-
-## Roadmap
-
-* Support for **variable-length** tags and lengths (currently fixed to **2 bytes**)
-* Support for configurable **endianness** (currently fixed to **big endian**)
+> **regardless of how many successful messages it has read**.
 
 ## Changelog
 
-* **`v1.0.0-alpha1`** (2021-03-14) 
+* **`v1.0.0-alpha1`** (2021-03-14)
   * First release with basic parsing support
-  * ⚠️&nbsp;&nbsp;Methods and structs may change completely 
+  * ⚠️&nbsp; Methods and structs may change completely 
