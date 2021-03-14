@@ -44,7 +44,7 @@ data := []byte{0x00, 0x01, 0x02 /* ... */}
 
 nodes, err := tlv.ParseBytes(data)
 if err != nil {
-panic(err) // invalid payload length vs bytes available
+    panic(err) // invalid payload length vs bytes available
 }
 
 nodes.HasTag(0x0123)        // returns a bool with the tag presence
@@ -59,7 +59,7 @@ data := []byte{0x00, 0x01, 0x02 /* ... */}
 
 n, err := tlv.ParseSingle(data)
 if err != nil {
-panic(err) // invalid payload length vs bytes available
+    panic(err) // invalid payload length vs bytes available
 }
 
 n.String()          // returns a base64 representation of the raw message
