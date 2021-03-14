@@ -37,8 +37,8 @@ func ExampleParseBytes() {
 	}
 
 	// Output: 2
-	// {Title:Hello there! Silent:false ActionId:12345678 Timestamp:2021-06-30 12:34:56 -0300 -03}
-	// {Title:You there? Silent:true ActionId:240 Timestamp:2021-03-01 01:02:03 -0300 -03}
+	// {Title:Hello there! Silent:false ActionId:12345678 Timestamp:2021-06-30 15:34:56 +0000 UTC}
+	// {Title:You there? Silent:true ActionId:240 Timestamp:2021-03-01 04:02:03 +0000 UTC}
 }
 
 const (
@@ -51,10 +51,10 @@ const (
 )
 
 type pushNotification struct {
-	Title     string
-	Silent    bool
-	ActionId  uint64
-	Timestamp time.Time
+	Title     string    `json:"title"`
+	Silent    bool      `json:"silent"`
+	ActionId  uint64    `json:"action_id"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 func newPushNotification(nodes Nodes) pushNotification {
@@ -71,7 +71,7 @@ func newPushNotification(nodes Nodes) pushNotification {
 	}
 	if timestamp, ok := nodes.GetFirstByTag(tagTimestamp); ok {
 		ts, _ := timestamp.GetDate()
-		pn.Timestamp = ts
+		pn.Timestamp = ts.UTC()
 	}
 
 	return pn
