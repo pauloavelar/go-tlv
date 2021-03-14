@@ -28,8 +28,8 @@ There are many implementations of the scheme. The example below is one of them:
 03 04   # length value
 ```
 
-The **value** itself can be any binary format, like numerical representations, strings and even other TLV
-messages. See [examples_test.go](https://github.com/pauloavelar/go-tlv/blob/main/tlv/examples_test.go#L80)
+The **value** itself can be any binary format, like numerical representations, strings and even other
+TLV messages. See [data_test.go](https://github.com/pauloavelar/go-tlv/blob/main/tlv/data_test.go)
 for an example of a complex structure.
 
 > It is up to the parser to know the **value** type and format based on the **tag**.
