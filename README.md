@@ -1,5 +1,7 @@
 # go-tlv
 
+[![codecov](https://codecov.io/gh/pauloavelar/go-tlv/branch/main/graph/badge.svg?token=4V15TQTKRR)](https://codecov.io/gh/pauloavelar/go-tlv)
+
 TLV Parser Library
 
 - fields are non-unique
