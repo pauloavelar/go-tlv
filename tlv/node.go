@@ -98,7 +98,7 @@ func (n Node) GetString() string {
 }
 
 // GetBool parses the value as boolean if it has enough bytes
-func (n Node) GetBool() (res bool, ok bool) {
+func (n Node) GetBool() (res, ok bool) {
 	if len(n.Value) < sizes.Bool {
 		return false, false
 	}
