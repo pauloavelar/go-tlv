@@ -69,13 +69,28 @@ n.GetPaddedUint8()  // parses the value as uint8 and pads it if too small
 // all available types: bool, uint8, uint16, uint32, uint64, string, time.Time and Nodes
 ```
 
+### Supported types
+
+| Type     | Max Length (bytes) | Notes                                                             |
+|----------|-------------------:|-------------------------------------------------------------------|
+| `bool`   |                  1 | Any **non-zero** value is treated as `true`                       | 
+| `uint8`  |                  1 |                                                                   |
+| `uint16` |                  2 |                                                                   |
+| `uint32` |                  4 |                                                                   |
+| `uint64` |                  8 |                                                                   |
+| `Time`   |                  8 | Value is parsed as padded `uint64` and then as **Unix** (seconds) |
+| `string` |      **Unlimited** | Value is parsed as **UTF-8**                                      |
+| `Nodes`  |      **Unlimited** |                                                                   |
+
+> If the **value** is bigger than the **max length**, only the first _n_ bytes are used. 
+
 ## Important details
 
 ### Tags are non-unique in TLV messages
 
-When parsing a value to multiple nodes, tags can be **repeated** and will be returned by
-the parser. Use `Nodes#GetByTag(tlv.Tag)` and `Nodes#GetFirstByTag(tlv.Tag)` to fetch **all**
-or **one** node, respectively.
+When parsing a value to multiple nodes, tags can be **repeated** and will be returned by the parser.
+Use `Nodes#GetByTag(tlv.Tag)` and `Nodes#GetFirstByTag(tlv.Tag)` to fetch **all** or **one** node,
+respectively.
 
 #### Example:
 
@@ -89,30 +104,29 @@ message:
 
 ### The parser supports multiple root level messages
 
-After reading a TLV-encoded message from a byte-array, when using `tlv.ParseBytes([]byte)`
-the parser will continue reading the array until it reaches the end. The returned structure
-will have **all the nodes** found in the payload.
+After reading a TLV-encoded message from a byte-array, when using `tlv.ParseBytes([]byte)` the parser
+will continue reading the array until it reaches the end. The returned structure will have **all the
+nodes** found in the payload.
 
-> ⚠️ The parser works in an all or none strategy when dealing with multiple messages.
+> ⚠️&nbsp; The parser works in an all or none strategy when dealing with multiple messages.
 
 ## Caveats
 
 ### No bit parity or checksum
 
-The encoding scheme itself does *not* provide any **bit parity** or **checksum** to ensure
-the  integrity of received payloads. It is up to the upper layer or to the payload design
-to add these features.
+The encoding scheme itself does *not* provide **bit parity** or **checksum** to ensure the integrity
+of received payloads. It is up to the upper layer or to the payload design to add these features.
 
 ### Errors with multiple messages are hard to pinpoint
 
-The bigger the payload, more likely errors will *not* be identified by the parser. The
-**only** failproof hint of a malformed payload is a mismatch between the read length and
-the remaining bytes in the stream. When that happens, a reading error may have happened
-*anywhere* in the payload, which means none of it can be trusted.
+The bigger the payload, more likely errors will *not* be identified by the parser. The **only**
+failproof hint of a malformed payload is a mismatch between the read length and the remaining bytes
+in the stream. When that happens, a reading error may have happened *anywhere* in the payload, which
+means none of it can be trusted.
 
-> If by the end of the byte stream there is a mismatch between the provided length and
-> the remaining bytes, the whole payload is invalidated, and the parser will return an
-> error -- regardless of how many successful messages it has read. 
+> ⚠️&nbsp; If by the end of the stream there is a mismatch between the **provided length** and the
+> **remaining bytes**, the whole payload is invalidated, and the parser will return an error,
+> **regardless of how many successful messages it has read**. 
 
 ## Roadmap
 
@@ -121,5 +135,6 @@ the remaining bytes in the stream. When that happens, a reading error may have h
 
 ## Changelog
 
-* **`v1.0.0`** (2021-03-14) 
+* **`v1.0.0-alpha1`** (2021-03-14) 
   * First release with basic parsing support
+  * ⚠️&nbsp;&nbsp;Methods and structs may change completely 

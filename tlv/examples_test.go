@@ -71,7 +71,7 @@ func newPushNotification(nodes Nodes) pushNotification {
 	}
 	if timestamp, ok := nodes.GetFirstByTag(tagTimestamp); ok {
 		ts, _ := timestamp.GetDate()
-		pn.Timestamp = ts.UTC()
+		pn.Timestamp = ts
 	}
 
 	return pn

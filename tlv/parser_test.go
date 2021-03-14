@@ -34,3 +34,24 @@ func TestParseReader_WhenTheReaderFails(t *testing.T) {
 	require.NotNil(t, err)
 	require.Nil(t, nodes)
 }
+
+func TestParseSingle_WhenTheDataIsCorrupted(t *testing.T) {
+	corrupted := data[:len(data)-5]
+
+	node, read, err := ParseSingle(corrupted)
+
+	require.NotNil(t, err)
+	require.Zero(t, read)
+	require.Empty(t, node)
+}
+
+func TestParseBytes_WhenTheDataIsCorrupted(t *testing.T) {
+	corrupted := make([]byte, 0, len(data)*2-5)
+	corrupted = append(corrupted, data...)
+	corrupted = append(corrupted, data[:len(data)-5]...)
+
+	node, err := ParseBytes(corrupted)
+
+	require.NotNil(t, err)
+	require.Nil(t, node)
+}
