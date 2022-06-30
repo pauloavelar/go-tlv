@@ -8,49 +8,49 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type panicReader struct{}
+type failingReader struct{}
 
-func (*panicReader) Read(_ []byte) (n int, err error) {
+func (*failingReader) Read(_ []byte) (n int, err error) {
 	return 0, errors.New("forcing reader error")
 }
 
-func TestParseReader(t *testing.T) {
+func TestDecodeReader(t *testing.T) {
 	reader := bytes.NewReader(data)
 
-	nodes, err := ParseReader(reader)
+	nodes, err := DecodeReader(reader)
 
 	require.Nil(t, err)
 	require.Equal(t, 1, len(nodes))
 	require.Equal(t, Tag(0x0001), nodes[0].Tag)
-	require.Equal(t, uint16(71), nodes[0].Length)
+	require.Equal(t, Length(71), nodes[0].Length)
 	require.Equal(t, 71, len(nodes[0].Value))
 }
 
-func TestParseReader_WhenTheReaderFails(t *testing.T) {
-	reader := new(panicReader)
+func TestDecodeReader_WhenTheReaderFails(t *testing.T) {
+	reader := new(failingReader)
 
-	nodes, err := ParseReader(reader)
+	nodes, err := DecodeReader(reader)
 
 	require.NotNil(t, err)
 	require.Nil(t, nodes)
 }
 
-func TestParseSingle_WhenTheDataIsCorrupted(t *testing.T) {
+func TestDecodeSingle_WhenTheDataIsCorrupted(t *testing.T) {
 	corrupted := data[:len(data)-5]
 
-	node, read, err := ParseSingle(corrupted)
+	node, read, err := DecodeSingle(corrupted)
 
 	require.NotNil(t, err)
 	require.Zero(t, read)
 	require.Empty(t, node)
 }
 
-func TestParseBytes_WhenTheDataIsCorrupted(t *testing.T) {
+func TestDecodeBytes_WhenTheDataIsCorrupted(t *testing.T) {
 	corrupted := make([]byte, 0, len(data)*2-5)
 	corrupted = append(corrupted, data...)
 	corrupted = append(corrupted, data[:len(data)-5]...)
 
-	node, err := ParseBytes(corrupted)
+	node, err := DecodeBytes(corrupted)
 
 	require.NotNil(t, err)
 	require.Nil(t, node)

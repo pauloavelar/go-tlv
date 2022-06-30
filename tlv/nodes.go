@@ -1,9 +1,9 @@
 package tlv
 
-// Nodes shorthand for []Node
+// Nodes shorthand for []Node.
 type Nodes []Node
 
-// GetByTag returns nodes that match the tag
+// GetByTag returns nodes that match the tag.
 func (ns Nodes) GetByTag(tag Tag) Nodes {
 	var res Nodes
 
@@ -16,7 +16,7 @@ func (ns Nodes) GetByTag(tag Tag) Nodes {
 	return res
 }
 
-// GetFirstByTag returns nodes that match the tag
+// GetFirstByTag returns nodes that match the tag.
 func (ns Nodes) GetFirstByTag(tag Tag) (res Node, ok bool) {
 	for i := range ns {
 		if ns[i].Tag == tag {
@@ -27,7 +27,7 @@ func (ns Nodes) GetFirstByTag(tag Tag) (res Node, ok bool) {
 	return res, false
 }
 
-// HasTag returns if a tag is present in the nodes
+// HasTag returns if a tag is present in the nodes.
 func (ns Nodes) HasTag(tag Tag) bool {
 	for i := range ns {
 		if ns[i].Tag == tag {

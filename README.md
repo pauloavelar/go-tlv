@@ -14,8 +14,8 @@
 ### Main advantages
 
 * Very flexible, easy to extend and change as needed
-* Messages can be easily parsed/displayed as a hierarchical tree-like structure
-* New tags can be added/moved without breaking parser compatibility
+* Messages can be easily decoded/displayed as a hierarchical tree-like structure
+* New tags can be added/moved without breaking decoder compatibility
 * Searching for specific tags in long payloads is easy and efficient
 
 ### Format
@@ -29,20 +29,20 @@ There are many implementations of the scheme. The example below is one of them:
 03 04   # length value
 ```
 
-The **value** itself can be any binary format, like numerical representations, strings and even other
-TLV messages. See [data_test.go](https://github.com/pauloavelar/go-tlv/blob/main/tlv/data_test.go)
+The **value** itself can be any binary format, such as numerical representations, strings and even
+other TLV messages. See [data_test.go](https://github.com/pauloavelar/go-tlv/blob/main/tlv/data_test.go)
 for an example of a complex structure.
 
 > It is up to the parser to know the **value** type and format based on the **tag**.
 
 ## Features
 
-### Byte array parsing to multiple TLV nodes
+### Byte array decoding as multiple TLV nodes
 
 ```go
 data := []byte{0x00, 0x01, 0x02 /* ... */}
 
-nodes, err := tlv.ParseBytes(data)
+nodes, err := tlv.DecodeBytes(data)
 if err != nil {
     panic(err) // invalid payload length vs bytes available
 }
@@ -52,12 +52,12 @@ nodes.GetByTag(0x0f2a)      // returns a filtered Nodes structure
 nodes.GetFirstByTag(0xabcd) // returns a Node structure with value accessors 
 ```
 
-### Byte array parsing to a single TLV node
+### Byte array decoding as a single TLV node
 
 ```go
 data := []byte{0x00, 0x01, 0x02 /* ... */}
 
-n, err := tlv.ParseSingle(data)
+n, err := tlv.DecodeSingle(data)
 if err != nil {
     panic(err) // invalid payload length vs bytes available
 }
@@ -69,6 +69,20 @@ n.GetPaddedUint8()  // parses the value as uint8 and pads it if too small
 
 // all available types: bool, uint8, uint16, uint32, uint64, string, time.Time and Nodes
 ```
+
+### Custom Decoder with different sizes and endianness
+
+The public functions exposed in the `tlv` package use a **standard decoder** with tags and
+lengths always taking 2 bytes per node, and the bytes are parsed using `binary.BigEndian`
+as the `ByteOrder`.
+
+In order to decode messages with different configuration, there is Decoder constructor:
+
+```go
+decoder, err := tlv.CreateDecoder(4, 4, binary.LittleEndian)
+```
+
+> The constructor validates the tag and length sizes, as they must be between `1` and `8`.
 
 ### Supported types
 
@@ -89,7 +103,7 @@ n.GetPaddedUint8()  // parses the value as uint8 and pads it if too small
 
 ### Tags are non-unique in TLV messages
 
-When parsing a value to multiple nodes, tags can be **repeated** and will be returned by the parser.
+When parsing a value to multiple nodes, tags can be **repeated** and will be returned by the decoder.
 Use `Nodes#GetByTag(tlv.Tag)` and `Nodes#GetFirstByTag(tlv.Tag)` to fetch **all** or **one** node,
 respectively.
 
@@ -103,13 +117,13 @@ message:
       - repeated_tag: b  # this will be another node
 ```
 
-### The parser supports multiple root level messages
+### The decoder supports multiple root level messages
 
-After reading a TLV-encoded message from a byte-array, when using `tlv.ParseBytes([]byte)` the parser
+After reading a TLV-encoded message from a byte-array, when using `tlv.DecodeBytes([]byte)` the parser
 will continue reading the array until it reaches the end. The returned structure will have **all the
 nodes** found in the payload.
 
-> ⚠️&nbsp; The parser works in an all or none strategy when dealing with multiple messages.
+> ⚠️&nbsp; The decoder works in an all or none strategy when dealing with multiple messages.
 
 ## Caveats
 
@@ -126,10 +140,15 @@ in the stream. When that happens, a reading error may have happened *anywhere* i
 means none of it can be trusted.
 
 > ⚠️&nbsp; If by the end of the stream there is a mismatch between the **provided length** and the
-> **remaining bytes**, the whole payload is invalidated, and the parser will return an error,
+> **remaining bytes**, the whole payload is invalidated, and the decoder will return an error,
 > **regardless of how many successful messages it has read**.
 
 ## Changelog
+
+* **`v1.0.0`** (2022-07-01)
+  * **Breaking** change: parser has been renamed to decoder
+  * [#10](https://github.com/pauloavelar/go-tlv/issues/10): add support to custom tag and length sizes
+  * [#11](https://github.com/pauloavelar/go-tlv/issues/11): add support to custom endianness (byte order)
 
 * **`v1.0.0-alpha1`** (2021-03-14)
   * First release with basic parsing support
