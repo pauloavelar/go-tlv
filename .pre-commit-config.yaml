@@ -1,0 +1,11 @@
+repos:
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.46.2
+    hooks:
+     - id: golangci-lint
+       entry: golangci-lint run
+       args:
+         - --max-issues-per-linter=0
+         - --max-same-issues=0
+         - --config=.golangci.yml
+         - --new-from-rev=HEAD~1
