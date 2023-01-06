@@ -3,7 +3,7 @@
 [![go version](https://img.shields.io/github/go-mod/go-version/pauloavelar/go-tlv)](https://github.com/pauloavelar/go-tlv/blob/main/go.mod)
 [![go docs](https://pkg.go.dev/badge/github.com/pauloavelar/go-tlv.svg)](https://pkg.go.dev/github.com/pauloavelar/go-tlv)
 [![license](https://img.shields.io/github/license/pauloavelar/go-tlv)](https://github.com/pauloavelar/go-tlv/blob/main/LICENSE)
-[![build](https://img.shields.io/github/workflow/status/pauloavelar/go-tlv/CI)](https://github.com/pauloavelar/go-tlv/actions/workflows/ci.yml)
+[![build](https://img.shields.io/github/actions/workflow/status/pauloavelar/go-tlv/ci.yml?branch=main)](https://github.com/pauloavelar/go-tlv/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/pauloavelar/go-tlv/branch/main/graph/badge.svg?token=4V15TQTKRR)](https://codecov.io/gh/pauloavelar/go-tlv)
 [![open issues](https://img.shields.io/github/issues-raw/pauloavelar/go-tlv)](https://github.com/pauloavelar/go-tlv/issues)
 
