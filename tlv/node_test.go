@@ -1,7 +1,6 @@
 package tlv
 
 import (
-	"encoding/binary"
 	"testing"
 	"time"
 
@@ -262,5 +261,6 @@ func TestNode_GetPaddedUint64(t *testing.T) {
 }
 
 func newNode(value []byte) *Node {
-	return &Node{binParser: binary.BigEndian, Value: value}
+	node := NewNode(Tag(0x01), value)
+	return &node
 }
