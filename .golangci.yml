@@ -12,9 +12,9 @@ output:
 linters:
   fast: true
   enable:
-    - deadcode        # Finds unused code
     - errcheck        # Locates unchecked errors in function returns
     - exhaustive      # Reports non-exhaustive switch statements
+    - exportloopref   # Finds exporting pointers for loop variables
     - funlen          # Limits the max lines and statements of functions
     - gochecknoinits  # Forbids init function declarations in packages (side-effects)
     - goconst         # Enforces constants are created for repeated strings
@@ -29,13 +29,11 @@ linters:
     - lll             # Limits maximum line lengths
     - nakedret        # Prevents naked returns from being used in large functions
     - nestif          # Limits the amount of nested ifs
-    - scopelint       # Checks for unpinned variables
-    - staticcheck     # Applies many different static analysis checks (similar to govet)
-    - structcheck     # Finds unused struct fields
+    - staticcheck     # Applies many static analysis checks (similar to govet)
     - typecheck       # Parses and type-checks code
     - unconvert       # Reports unnecessary type conversions
+    - unused          # Reports unused variables, constants, struct fields and code
     - unparam         # Reports unused function parameters
-    - varcheck        # Reports unused global variables and constants
     - whitespace      # Enforces no excessive whitespace is used (e.g. two line breaks)
 
 issues:

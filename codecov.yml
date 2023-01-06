@@ -3,7 +3,7 @@ coverage:
     project:
       default:
         target: auto
-        threshold: 0%
+        threshold: 80%
         branches: [ main ]
         if_ci_failed: error
         only_pulls: true
