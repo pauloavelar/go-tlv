@@ -22,6 +22,10 @@ jobs:
       # Checks-out your repo under $GITHUB_WORKSPACE
       - name: checkout
         uses: actions/checkout@v3
+        with:
+          # Checkout pull request HEAD commit instead of merge commit
+          # Codecov checks do not get reported unless this ref is checked out
+          ref: ${{ github.event.pull_request.head.sha }}
 
       # Builds code
       - name: build
