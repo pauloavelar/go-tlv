@@ -20,10 +20,11 @@ linters:
     - goconst         # Enforces constants are created for repeated strings
     - gocritic        # Offers an opinionated set of best practices
     - gocyclo         # Analyzes code complexity (cyclomatic)
-    - gosimple        # Offers code simplification suggestions
+    - godot           # Enforces comments always end with a period
     - gofmt           # Enforces source code is properly formatted
     - gomnd           # Forbids magic numbers from being used without declaration
     - gosec           # Inspects source code for security problems
+    - gosimple        # Offers code simplification suggestions
     - govet           # Reports suspicious construct (e.g. Printf with bad parameter count)
     - ineffassign     # Detects unused existing variable assignments
     - lll             # Limits maximum line lengths
@@ -72,6 +73,10 @@ linters-settings:
       - whyNoLint
   gocyclo:
     min-complexity: 8
+  godot:
+    exclude:
+      - "^(FIXME|TODO) "  # technical comments not meant for go doc
+      - "\\*$"            # multiline comments with asterisk indentation
   gofmt:
     simplify: true
   govet:

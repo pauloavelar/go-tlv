@@ -164,6 +164,11 @@ means none of it can be trusted.
 
 ## Changelog
 
+* **`v1.1.0`** (2023-06-01)
+  * [#23](https://github.com/pauloavelar/go-tlv/pull/23): nil pointer errors on manually-created nodes
+    * fix panics when calling value getters on a node without a decoder reference
+    * provide functions to create a Node with the proper configuration (standard or custom)
+
 * **`v1.0.0`** (2022-07-01)
   * **Breaking** change: parser has been renamed to decoder
   * [#10](https://github.com/pauloavelar/go-tlv/issues/10): add support to custom tag and length sizes
