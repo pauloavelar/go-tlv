@@ -260,6 +260,11 @@ func TestNode_GetPaddedUint64(t *testing.T) {
 	}
 }
 
+func TestNode_GetUint16_WhenTheNodeIsDeclaredManually(t *testing.T) {
+	node := &Node{Value: []byte{0x12, 0x34}}
+	require.Equal(t, uint16(0x1234), node.GetPaddedUint16())
+}
+
 func newNode(value []byte) *Node {
 	node := NewNode(Tag(0x01), value)
 	return &node

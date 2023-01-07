@@ -125,6 +125,25 @@ nodes** found in the payload.
 
 > ⚠️&nbsp; The decoder works in an all or none strategy when dealing with multiple messages.
 
+### Manually-created nodes use the default decoder configuration
+
+When a `tlv.Node` is created by declaring the struct, all methods that require context, such as `GetNodes`
+or `GetUint8` (or any other integer parser), will use the **standard decoder** definitions. See above for
+more details on the decoder. To create a node with custom decoder configuration, first create a decoder
+and call the `NewNode` method on it.
+
+
+```go
+var node tlv.Node
+
+node = tlv.Node{Tag: Tag(0x1234), Value: []byte{1}}
+node.GetNodes() // uses the standard decoder configuration
+
+customDecoder := tlv.MustCreateDecoder(1, 1, binary.LittleEndian)
+node = customDecoder.NewNode(Tag(0x1234), []byte{1})
+node.GetNodes() // uses the customDecoder configuration
+```
+
 ## Caveats
 
 ### No bit parity or checksum

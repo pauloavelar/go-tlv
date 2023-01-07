@@ -8,17 +8,17 @@ import (
 	"github.com/pauloavelar/go-tlv/tlv/internal/utils"
 )
 
-// Decoder is a TLV decoder with custom configuration.
+// Decoder is a configurable TLV decoder instance.
 type Decoder interface {
-	// DecodeReader decodes the whole reader to a list of TLV nodes
+	// DecodeReader decodes the entire reader data to a list of TLV [Nodes].
 	DecodeReader(reader io.Reader) (Nodes, error)
-	// DecodeBytes decodes a byte array to a list of TLV nodes
+	// DecodeBytes decodes a byte array to a list of TLV [Nodes].
 	DecodeBytes(data []byte) (Nodes, error)
-	// DecodeSingle decodes a byte array to a single TLV node
+	// DecodeSingle decodes a byte array to a single TLV [Node].
 	DecodeSingle(data []byte) (res Node, read uint64, err error)
-	// NewNode creates a new node using the decoder configuration
+	// NewNode creates a new node using the decoder configuration.
 	NewNode(tag Tag, value []byte) Node
-	// GetByteOrder returns the decoder endianness configuration
+	// GetByteOrder returns the decoder endianness configuration.
 	GetByteOrder() binary.ByteOrder
 }
 
@@ -36,7 +36,7 @@ const (
 	maxLenSize = 8 // 2^8 = 256
 )
 
-// MustCreateDecoder creates a decoder using custom configuration or panics in case of any errors.
+// MustCreateDecoder creates a [Decoder] using custom configuration or panics in case of any errors.
 func MustCreateDecoder(tagSize, lengthSize uint8, byteOrder binary.ByteOrder) Decoder {
 	res, err := CreateDecoder(tagSize, lengthSize, byteOrder)
 	if err != nil {
@@ -46,7 +46,7 @@ func MustCreateDecoder(tagSize, lengthSize uint8, byteOrder binary.ByteOrder) De
 	return res
 }
 
-// CreateDecoder creates a decoder using custom configuration.
+// CreateDecoder creates a [Decoder] using custom configuration.
 // Hint: tagSize and lengthSize must be numbers between 1 and 8.
 func CreateDecoder(tagSize, lengthSize uint8, byteOrder binary.ByteOrder) (Decoder, error) {
 	if tagSize < minTagSize || tagSize > maxTagSize {
@@ -67,7 +67,7 @@ func CreateDecoder(tagSize, lengthSize uint8, byteOrder binary.ByteOrder) (Decod
 	return res, nil
 }
 
-// DecodeReader decodes the full contents of a Reader as TLV nodes.
+// DecodeReader decodes the full contents of a [io.Reader] as TLV [Nodes].
 // Note: the current implementation loads the entire Reader data into memory.
 func (d *decoder) DecodeReader(reader io.Reader) (Nodes, error) {
 	data, err := io.ReadAll(reader)
@@ -78,7 +78,7 @@ func (d *decoder) DecodeReader(reader io.Reader) (Nodes, error) {
 	return d.DecodeBytes(data)
 }
 
-// DecodeBytes decodes a byte array as TLV nodes.
+// DecodeBytes decodes a byte array as TLV [Nodes].
 func (d *decoder) DecodeBytes(data []byte) (Nodes, error) {
 	node, read, err := d.DecodeSingle(data)
 	if err != nil {
@@ -97,7 +97,7 @@ func (d *decoder) DecodeBytes(data []byte) (Nodes, error) {
 	return append(Nodes{node}, next...), nil
 }
 
-// DecodeSingle decodes a byte array as a single TLV node.
+// DecodeSingle decodes a byte array as a single TLV [Node].
 func (d *decoder) DecodeSingle(data []byte) (res Node, read uint64, err error) {
 	if len(data) < int(d.minNodeSize) {
 		return res, 0, errors.NewMessageTooShortError(data)
@@ -122,6 +122,7 @@ func (d *decoder) DecodeSingle(data []byte) (res Node, read uint64, err error) {
 	return node, messageLength, nil
 }
 
+// NewNode creates a new [Node] using the [Decoder] configuration.
 func (d *decoder) NewNode(tag Tag, value []byte) Node {
 	return Node{
 		Tag:     tag,
@@ -131,6 +132,7 @@ func (d *decoder) NewNode(tag Tag, value []byte) Node {
 	}
 }
 
+// GetByteOrder returns the [Decoder] endianness configuration.
 func (d *decoder) GetByteOrder() binary.ByteOrder {
 	return d.byteOrder
 }
