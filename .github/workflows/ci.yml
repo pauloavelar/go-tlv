@@ -22,7 +22,7 @@ jobs:
         with:
           files: ./coverage.out
           fail_ci_if_error: true
-          verbose: true
+          verbose: false
   lint:
     runs-on: ubuntu-latest
     steps:
