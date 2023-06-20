@@ -155,8 +155,8 @@ func (n *Node) GetVariantArray() (Nodes, error) {
 
 // GetArray parses the value as an array. All nodes in the array have the same tag.
 func (n *Node) GetArray() (Nodes, error) {
-	lengthSize := uint64(n.decoder.GetLengthSize())
 	tagSize := uint64(n.decoder.GetTagSize())
+	lengthSize := uint64(n.decoder.GetLengthSize())
 	if len(n.Value) < int(lengthSize+tagSize) {
 		return nil, errors.NewMessageTooShortError(n.Value)
 	}
@@ -180,8 +180,9 @@ func (n *Node) GetArray() (Nodes, error) {
 	return nodes, nil
 }
 
-// GetStringMap parses the value as an key-value pair, and the key type is string.
-func (n *Node) GetStringMap() (map[string]*Node, error) {
+// GetStringMap parses the value as an key-value pair, the key type is string, and
+// each value have individual tag.
+func (n *Node) GetVariantStringMap() (map[string]*Node, error) {
 	lengthSize := uint64(n.decoder.GetLengthSize())
 	if len(n.Value) < int(lengthSize) {
 		return nil, errors.NewMessageTooShortError(n.Value)
@@ -202,6 +203,39 @@ func (n *Node) GetStringMap() (map[string]*Node, error) {
 		}
 		offset += read
 		nodes[labelString] = &node
+	}
+	return nodes, nil
+}
+
+// GetStringMap parses the value as an key-value pair, the key type is string, and
+// each value have the same tag.
+func (n *Node) GetStringMap() (map[string]*Node, error) {
+	tagSize := uint64(n.decoder.GetTagSize())
+	lengthSize := uint64(n.decoder.GetLengthSize())
+	if len(n.Value) < int(lengthSize+tagSize) {
+		return nil, errors.NewMessageTooShortError(n.Value)
+	}
+	mapTag := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[:tagSize])
+	mapLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[tagSize:tagSize+lengthSize])
+	nodes := make(map[string]*Node, mapLength)
+	offset := tagSize + lengthSize
+
+	for i := uint64(0); i < mapLength; i++ {
+		labelLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[offset:offset+lengthSize])
+		offset += lengthSize
+		labelString := string(n.Value[offset : offset+labelLength])
+		offset += labelLength
+
+		itemLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[offset:offset+lengthSize])
+		offset += lengthSize
+		nodes[labelString] = &Node{
+			Tag:    Tag(mapTag),
+			Length: Length(itemLength),
+			Value:  n.Value[offset : offset+itemLength],
+			// All the map items use the same tag, so we do not provide raw bytes.
+			Raw: nil,
+		}
+		offset += itemLength
 	}
 	return nodes, nil
 }
