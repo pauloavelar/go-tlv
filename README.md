@@ -42,14 +42,14 @@ for an example of a complex structure.
 ```go
 data := []byte{0x00, 0x01, 0x02 /* ... */}
 
-nodes, err := tlv.DecodeBytes(data)
+nodes, err := tlv.DecodeAll(data)
 if err != nil {
     panic(err) // invalid payload length vs bytes available
 }
 
 nodes.HasTag(0x0123)        // returns a bool with the tag presence
 nodes.GetByTag(0x0f2a)      // returns a filtered Nodes structure
-nodes.GetFirstByTag(0xabcd) // returns a Node structure with value accessors 
+nodes.GetFirstByTag(0xabcd) // returns a Node structure with value accessors
 ```
 
 ### Byte array decoding as a single TLV node
@@ -62,10 +62,11 @@ if err != nil {
     panic(err) // invalid payload length vs bytes available
 }
 
-n.String()          // returns a base64 representation of the raw message
-n.GetNodes()        // parses the value as TLV and returns a Nodes structure (or error)
-n.GetUint8()        // parses the value as uint8 (returns error if value is too small)
-n.GetPaddedUint8()  // parses the value as uint8 and pads it if too small
+n.Base64()           // returns a base64 representation of the raw message
+n.GetNodes()         // parses the value as TLV and returns a Nodes structure (or error)
+n.GetUint8()         // parses the value as uint8 (returns error if value is too small)
+n.GetPaddedUint32()  // parses the value as uint32 and pads it if too small
+n.GetString()        // parses the value as string
 
 // all available types: bool, uint8, uint16, uint32, uint64, string, time.Time and Nodes
 ```
@@ -88,7 +89,7 @@ decoder, err := tlv.CreateDecoder(4, 4, binary.LittleEndian)
 
 | Type     | Max Length (bytes) | Notes                                                             |
 |----------|-------------------:|-------------------------------------------------------------------|
-| `bool`   |                  1 | Any **non-zero** value is treated as `true`                       | 
+| `bool`   |                  1 | Any **non-zero** value is treated as `true`                       |
 | `uint8`  |                  1 |                                                                   |
 | `uint16` |                  2 |                                                                   |
 | `uint32` |                  4 |                                                                   |
@@ -113,13 +114,13 @@ respectively.
 # Visual representation of a repeated tag in an object-like payload
 message:
   - object:
-      - repeated_tag: a  # this will be a node 
+      - repeated_tag: a  # this will be a node
       - repeated_tag: b  # this will be another node
 ```
 
 ### The decoder supports multiple root level messages
 
-After reading a TLV-encoded message from a byte-array, when using `tlv.DecodeBytes([]byte)` the parser
+After reading a TLV-encoded message from a byte-array, when using `tlv.DecodeAll([]byte)` the parser
 will continue reading the array until it reaches the end. The returned structure will have **all the
 nodes** found in the payload.
 
@@ -176,4 +177,4 @@ means none of it can be trusted.
 
 * **`v1.0.0-alpha1`** (2021-03-14)
   * First release with basic parsing support
-  * ⚠️&nbsp; Methods and structs may change completely 
+  * ⚠️&nbsp; Methods and structs may change completely

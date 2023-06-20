@@ -18,9 +18,9 @@ func DecodeReader(reader io.Reader) (Nodes, error) {
 	return stdDecoder.DecodeReader(reader)
 }
 
-// DecodeBytes decodes a byte array as a list of TLV [Nodes].
-func DecodeBytes(data []byte) (Nodes, error) {
-	return stdDecoder.DecodeBytes(data)
+// DecodeAll decodes a byte array as a list of TLV [Nodes].
+func DecodeAll(data []byte) (Nodes, error) {
+	return stdDecoder.DecodeAll(data)
 }
 
 // DecodeSingle decodes a byte array as a single TLV [Node].
