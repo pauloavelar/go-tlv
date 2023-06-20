@@ -67,7 +67,7 @@ n.GetNodes()        // parses the value as TLV and returns a Nodes structure (or
 n.GetUint8()        // parses the value as uint8 (returns error if value is too small)
 n.GetPaddedUint8()  // parses the value as uint8 and pads it if too small
 
-// all available types: bool, uint8, uint16, uint32, uint64, string, time.Time and Nodes
+// all available types: bool, uint8, uint16, uint32, uint64, string, time.Time, Nodes and map[string]*Node
 ```
 
 ### Custom Decoder with different sizes and endianness

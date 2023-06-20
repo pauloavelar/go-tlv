@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"time"
 
+	"github.com/pauloavelar/go-tlv/tlv/internal/errors"
 	"github.com/pauloavelar/go-tlv/tlv/internal/sizes"
 	"github.com/pauloavelar/go-tlv/tlv/internal/utils"
 )
@@ -129,6 +130,114 @@ func (n *Node) GetPaddedUint64() uint64 {
 	padding := utils.GetPadding(sizes.Uint64, len(n.Value))
 
 	return n.getByteOrder().Uint64(append(padding, n.Value...))
+}
+
+// GetVariantArray parses the value as an array. All nodes in the array have individual tag.
+func (n *Node) GetVariantArray() (Nodes, error) {
+	lengthSize := uint64(n.decoder.GetLengthSize())
+	if len(n.Value) < int(lengthSize) {
+		return nil, errors.NewMessageTooShortError(n.Value)
+	}
+	arrayLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[:lengthSize])
+	nodes := make([]Node, 0, arrayLength)
+	offset := lengthSize
+
+	for i := uint64(0); i < arrayLength; i++ {
+		node, read, err := n.decoder.DecodeSingle(n.Value[offset:])
+		if err != nil {
+			return nil, err
+		}
+		offset += read
+		nodes = append(nodes, node)
+	}
+	return nodes, nil
+}
+
+// GetArray parses the value as an array. All nodes in the array have the same tag.
+func (n *Node) GetArray() (Nodes, error) {
+	tagSize := uint64(n.decoder.GetTagSize())
+	lengthSize := uint64(n.decoder.GetLengthSize())
+	if len(n.Value) < int(lengthSize+tagSize) {
+		return nil, errors.NewMessageTooShortError(n.Value)
+	}
+	arrayTag := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[:tagSize])
+	arrayLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[tagSize:tagSize+lengthSize])
+	nodes := make([]Node, 0, arrayLength)
+	offset := tagSize + lengthSize
+
+	for i := uint64(0); i < arrayLength; i++ {
+		itemLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[offset:offset+lengthSize])
+		offset += lengthSize
+		nodes = append(nodes, Node{
+			Tag:    Tag(arrayTag),
+			Length: Length(itemLength),
+			Value:  n.Value[offset : offset+itemLength],
+			// All the array items use the same tag, so we do not provide raw bytes.
+			Raw: nil,
+		})
+		offset += itemLength
+	}
+	return nodes, nil
+}
+
+// GetStringMap parses the value as an key-value pair, the key type is string, and
+// each value have individual tag.
+func (n *Node) GetVariantStringMap() (map[string]*Node, error) {
+	lengthSize := uint64(n.decoder.GetLengthSize())
+	if len(n.Value) < int(lengthSize) {
+		return nil, errors.NewMessageTooShortError(n.Value)
+	}
+	mapLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[:lengthSize])
+	nodes := make(map[string]*Node, mapLength)
+	offset := lengthSize
+
+	for i := uint64(0); i < mapLength; i++ {
+		labelLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[offset:offset+lengthSize])
+		offset += lengthSize
+		labelString := string(n.Value[offset : offset+labelLength])
+		offset += labelLength
+
+		node, read, err := n.decoder.DecodeSingle(n.Value[offset:])
+		if err != nil {
+			return nil, err
+		}
+		offset += read
+		nodes[labelString] = &node
+	}
+	return nodes, nil
+}
+
+// GetStringMap parses the value as an key-value pair, the key type is string, and
+// each value have the same tag.
+func (n *Node) GetStringMap() (map[string]*Node, error) {
+	tagSize := uint64(n.decoder.GetTagSize())
+	lengthSize := uint64(n.decoder.GetLengthSize())
+	if len(n.Value) < int(lengthSize+tagSize) {
+		return nil, errors.NewMessageTooShortError(n.Value)
+	}
+	mapTag := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[:tagSize])
+	mapLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[tagSize:tagSize+lengthSize])
+	nodes := make(map[string]*Node, mapLength)
+	offset := tagSize + lengthSize
+
+	for i := uint64(0); i < mapLength; i++ {
+		labelLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[offset:offset+lengthSize])
+		offset += lengthSize
+		labelString := string(n.Value[offset : offset+labelLength])
+		offset += labelLength
+
+		itemLength := utils.GetPaddedUint64(n.decoder.GetByteOrder(), n.Value[offset:offset+lengthSize])
+		offset += lengthSize
+		nodes[labelString] = &Node{
+			Tag:    Tag(mapTag),
+			Length: Length(itemLength),
+			Value:  n.Value[offset : offset+itemLength],
+			// All the map items use the same tag, so we do not provide raw bytes.
+			Raw: nil,
+		}
+		offset += itemLength
+	}
+	return nodes, nil
 }
 
 func (n *Node) getSafeDecoder() Decoder {
