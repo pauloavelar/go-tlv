@@ -20,6 +20,10 @@ type Decoder interface {
 	NewNode(tag Tag, value []byte) Node
 	// GetByteOrder returns the decoder endianness configuration.
 	GetByteOrder() binary.ByteOrder
+	// GetTagSize returns the decoder tag size configuration.
+	GetTagSize() uint8
+	// GetLengthSize returns the decoder length size configuration.
+	GetLengthSize() uint8
 }
 
 type decoder struct {
@@ -135,4 +139,14 @@ func (d *decoder) NewNode(tag Tag, value []byte) Node {
 // GetByteOrder returns the [Decoder] endianness configuration.
 func (d *decoder) GetByteOrder() binary.ByteOrder {
 	return d.byteOrder
+}
+
+// GetTagSize returns the decoder tag size configuration.
+func (d *decoder) GetTagSize() uint8 {
+	return d.tagSize
+}
+
+// GetLengthSize returns the decoder length size configuration.
+func (d *decoder) GetLengthSize() uint8 {
+	return d.lengthSize
 }
