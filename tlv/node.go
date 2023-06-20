@@ -11,10 +11,13 @@ import (
 
 // Node structure used to represent a decoded TLV message.
 type Node struct {
-	Tag    Tag
+	Tag Tag
+	// Length of value part in bytes.
 	Length Length
-	Value  []byte
-	Raw    []byte
+	// The underlying bytes with value part only.
+	Value []byte
+	// The underlying bytes with tag, length and value parts.
+	Raw []byte
 
 	decoder Decoder
 }
@@ -25,14 +28,14 @@ type Tag uint64
 // Length value size in bytes.
 type Length uint64
 
-// String converts the node bytes to base64.
-func (n *Node) String() string {
+// Base64 converts the node bytes to base64.
+func (n *Node) Base64() string {
 	return base64.StdEncoding.EncodeToString(n.Raw)
 }
 
 // GetNodes parses the value as decoded TLV nodes.
 func (n *Node) GetNodes() (Nodes, error) {
-	return n.getSafeDecoder().DecodeBytes(n.Value)
+	return n.getSafeDecoder().DecodeAll(n.Value)
 }
 
 // GetBool parses the value as boolean if it has enough bytes.

@@ -12,8 +12,8 @@ import (
 type Decoder interface {
 	// DecodeReader decodes the entire reader data to a list of TLV [Nodes].
 	DecodeReader(reader io.Reader) (Nodes, error)
-	// DecodeBytes decodes a byte array to a list of TLV [Nodes].
-	DecodeBytes(data []byte) (Nodes, error)
+	// DecodeAll decodes a byte array to a list of TLV [Nodes].
+	DecodeAll(data []byte) (Nodes, error)
 	// DecodeSingle decodes a byte array to a single TLV [Node].
 	DecodeSingle(data []byte) (res Node, read uint64, err error)
 	// NewNode creates a new node using the decoder configuration.
@@ -75,11 +75,11 @@ func (d *decoder) DecodeReader(reader io.Reader) (Nodes, error) {
 		return nil, err
 	}
 
-	return d.DecodeBytes(data)
+	return d.DecodeAll(data)
 }
 
-// DecodeBytes decodes a byte array as TLV [Nodes].
-func (d *decoder) DecodeBytes(data []byte) (Nodes, error) {
+// DecodeAll decodes a byte array as TLV [Nodes].
+func (d *decoder) DecodeAll(data []byte) (Nodes, error) {
 	node, read, err := d.DecodeSingle(data)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (d *decoder) DecodeBytes(data []byte) (Nodes, error) {
 		return Nodes{node}, nil
 	}
 
-	next, err := d.DecodeBytes(data[read:])
+	next, err := d.DecodeAll(data[read:])
 	if err != nil {
 		return nil, err
 	}

@@ -45,12 +45,12 @@ func TestDecodeSingle_WhenTheDataIsCorrupted(t *testing.T) {
 	require.Empty(t, node)
 }
 
-func TestDecodeBytes_WhenTheDataIsCorrupted(t *testing.T) {
+func TestDecodeAll_WhenTheDataIsCorrupted(t *testing.T) {
 	corrupted := make([]byte, 0, len(data)*2-5)
 	corrupted = append(corrupted, data...)
 	corrupted = append(corrupted, data[:len(data)-5]...)
 
-	node, err := DecodeBytes(corrupted)
+	node, err := DecodeAll(corrupted)
 
 	require.NotNil(t, err)
 	require.Nil(t, node)
